@@ -63,9 +63,7 @@ files: # 子目录（包）
 ### `mapper.java`
 
 ```java
-package $
-
-{package};
+package ${package};
 
 import io.mybatis.mapper.Mapper;
 
@@ -74,15 +72,12 @@ import io.mybatis.mapper.Mapper;
  *
  * @author ${SYS['user.name']}
  */
-public interface $ {
-  it.name.className
-}Mapper extends Mapper<${it.name.className},Long>{
+public interface ${it.name.className}Mapper extends Mapper<${it.name.className}, Long> {
 
-    }
+}
 ```
 
 这个模板生成一个继承了 tk.Mapper 接口的接口。例如：
-
 ```java
 package tk.mybatis.mapper.demo.mapper;
 
@@ -101,9 +96,7 @@ public interface UserMapper extends Mapper<User, Long> {
 ### `model.java`
 
 ```java
-package $
-
-{package};
+package ${package};
 
 import javax.persistence.*;
 
@@ -117,49 +110,46 @@ import ${javaType};
  * @author ${SYS['user.name']}
  */
 @Table(name = "${it.name}")
-public class $ {
-  it.name.className
-} {
-<#--下面这段只是为了演示 tk.mapper 中的 generateColumnConsts 用法，实际不需要这种变量-->
-<#if project.attrs.generateColumnConsts??&&project.attrs.generateColumnConsts=='true'>
-<#list it.columns as column>
-public static final String ${column.name.uppercase}="${column.name}";
-</#list>
-</#if>
+public class ${it.name.className} {
+  <#-- 下面这段只是为了演示 tk.mapper 中的 generateColumnConsts 用法，实际不需要这种变量 -->
+  <#if project.attrs.generateColumnConsts?? && project.attrs.generateColumnConsts == 'true'>
+  <#list it.columns as column>
+  public static final String ${column.name.uppercase} = "${column.name}";
+  </#list>
+  </#if>
 
-<#list it.columns as column>
-<#if column.pk>
-@Id
-@GeneratedValue(generator = "JDBC")
-</#if>
-@Column(name = "${column.name}")
-private ${column.javaType}${column.name.fieldName};
+  <#list it.columns as column>
+  <#if column.pk>
+  @Id
+  @GeneratedValue(generator = "JDBC")
+  </#if>
+  @Column(name = "${column.name}")
+  private ${column.javaType} ${column.name.fieldName};
 
-</#list>
+  </#list>
 
-<#list it.columns as column>
-/**
- * 获取 ${column.comment}
- *
- * @return ${column.name.fieldName} - ${column.comment}
- */
-public ${column.javaType}get${column.name.className}(){
+  <#list it.columns as column>
+  /**
+   * 获取 ${column.comment}
+   *
+   * @return ${column.name.fieldName} - ${column.comment}
+   */
+  public ${column.javaType} get${column.name.className}() {
     return ${column.name.fieldName};
-    }
+  }
 
-/**
- * 设置${column.comment}
- *
- * @param ${column.name.fieldName} ${column.comment}
- */
-public void set${column.name.className}(${column.javaType}${column.name.fieldName}){
-    this.${column.name.fieldName}=${column.name.fieldName};
-    }
+  /**
+   * 设置${column.comment}
+   *
+   * @param ${column.name.fieldName} ${column.comment}
+   */
+  public void set${column.name.className}(${column.javaType} ${column.name.fieldName}) {
+    this.${column.name.fieldName} = ${column.name.fieldName};
+  }
 
-</#list>
-    }
+  </#list>
+}
 ```
-
 上面模板生成了实体类，实体类改为模板生成后会更灵活，使用更方便。
 
 上面模板的一个示例如下：
@@ -177,10 +167,10 @@ import javax.persistence.*;
  */
 @Table(name = "user")
 public class User {
-  public static final String ID        = "id";
+  public static final String ID = "id";
   public static final String USER_NAME = "user_name";
-  public static final String USER_AGE  = "user_age";
-  public static final String ADDRESS   = "address";
+  public static final String USER_AGE = "user_age";
+  public static final String ADDRESS = "address";
 
   @Id
   @GeneratedValue(generator = "JDBC")
@@ -284,14 +274,13 @@ public class User {
     <id property="${column.name.fieldName}" column="${column.name}" jdbcType="${column.jdbcType}"/>
     <#else>
     <result property="${column.name.fieldName}" column="${column.name}" jdbcType="${column.jdbcType}"/>
-  </#if>
-</#list>
-    </resultMap>
-    </mapper>
+    </#if>
+    </#list>
+  </resultMap>
+</mapper>
 ```
 
 生成的一个示例如下：
-
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
@@ -310,7 +299,6 @@ public class User {
 ### 方式一：引入依赖，写代码调用
 
 ```xml
-
 <dependency>
   <groupId>io.mybatis.rui</groupId>
   <artifactId>rui-core</artifactId>
@@ -319,7 +307,6 @@ public class User {
 ```
 
 在代码中调用生成器：
-
 ```java
 Project.load("tk-mapper/generator-demo.yaml").generator();
 ```
@@ -333,12 +320,10 @@ java -cp mysql-connector-java-5.1.49.jar:rui-cli.jar \
  -Dorg.slf4j.simpleLogger.defaultLogLevel=trace \
  io.mybatis.rui.cli.Main -p project.yaml
 ```
-
-> `-cp`需要包含数据库驱动和代码生成器。
+>`-cp`需要包含数据库驱动和代码生成器。
 
 
 详细可以参数如下：
-
 ```
   Options:
     -p, --project

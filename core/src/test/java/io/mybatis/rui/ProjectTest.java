@@ -71,7 +71,7 @@ public class ProjectTest {
   @Test
   public void testCommonMapper() {
     Project project = Project.load("tk-mapper/generator-demo.yaml");
-    project.preview().syncDisk(new File("tk-mapper-demo.zip"));
+    project.preview().syncDisk(new File("target/tk-mapper-demo.zip"));
     project.generate();
   }
 
