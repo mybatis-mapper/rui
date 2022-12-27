@@ -3,6 +3,9 @@ target/
 **/dependency-reduced-pom.xml
 **/.flattened-pom.xml
 
+# Test
+*.zip
+
 # IDEA #
 .idea/
 *.iml

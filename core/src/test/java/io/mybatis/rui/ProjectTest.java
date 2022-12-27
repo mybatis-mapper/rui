@@ -4,15 +4,45 @@ import cn.hutool.core.io.FileUtil;
 import io.mybatis.rui.template.Project;
 import io.mybatis.rui.template.vfs.VFSGenFileSystem;
 import io.mybatis.rui.template.vfs.VFSTemplateFileSystem;
+import org.hsqldb.cmdline.SqlFile;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ProjectTest {
+
+  @BeforeClass
+  public static void initDb() {
+    try {
+      Class.forName("org.hsqldb.jdbcDriver");
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+    String url = "jdbc:hsqldb:mem:rui";
+    String user = "sa";
+    String password = "";
+    try {
+      Connection connection = DriverManager.getConnection(url, user, password);
+      InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("CreateDB.sql");
+
+      SqlFile sqlFile = new SqlFile(new InputStreamReader(inputStream), "init", System.out, "UTF-8", false, new File("."));
+      sqlFile.setConnection(connection);
+      sqlFile.execute();
+
+      connection.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
   @Test
   public void testSimple() {

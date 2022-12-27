@@ -6,10 +6,11 @@ database: # 1. 数据库配置
   # 数据库连接
   jdbcConnection:
     # MySQL 测试 ----------------------------------
-    dialect: MYSQL
-    driver: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test?useSSL=false
-    user: root
+    dialect: HSQLDB
+    driver: org.hsqldb.jdbcDriver
+    url: jdbc:hsqldb:mem:rui
+    user: sa
+    password:
   # password: root
   # postgresql 测试 ----------------------------------
   # dialect: JDBC

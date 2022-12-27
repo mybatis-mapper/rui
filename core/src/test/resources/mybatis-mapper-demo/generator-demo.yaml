@@ -4,11 +4,11 @@ path: ${SYS['user.dir']}/target/
 templates: mybatis-mapper-demo
 database: # 1. 数据库配置
   jdbcConnection:
-    dialect: MYSQL
-    driver: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test?useSSL=false
-    user: root
-  # password: root
+    dialect: HSQLDB
+    driver: org.hsqldb.jdbcDriver
+    url: jdbc:hsqldb:mem:rui
+    user: sa
+    password:
   tables:
     - '%'
   # 根据类型对字段类型打标签, 可以通过 column.tags.TAG 的 true/false 来判断当前列是否有该标签

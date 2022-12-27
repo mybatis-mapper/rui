@@ -4,11 +4,11 @@ path: ${SYS['user.dir']}/target/
 templates: tk-mapper
 database: # 1. 数据库配置
   jdbcConnection:
-    dialect: MYSQL
-    driver: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test?useSSL=false
-    user: root
-  # password: root
+    dialect: HSQLDB
+    driver: org.hsqldb.jdbcDriver
+    url: jdbc:hsqldb:mem:rui
+    user: sa
+    password:
   tables:
     - '%'
   keywordWrap: "`%s`"

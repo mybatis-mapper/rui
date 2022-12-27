@@ -1,0 +1,5 @@
+dialect: HSQLDB
+driver: org.hsqldb.jdbcDriver
+url: jdbc:hsqldb:mem:rui
+user: sa
+password:

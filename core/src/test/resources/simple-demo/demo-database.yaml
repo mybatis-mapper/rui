@@ -1,6 +1,6 @@
 # 数据库连接
 jdbcConnection:
-  ref: "simple-demo/demo-jdbc-mysql-mac.yaml"
+  ref: "simple-demo/demo-jdbc-hsqldb.yaml"
 # 单个表的配置
 tables:
   - apply%
