@@ -1,0 +1,15 @@
+<#list it.columns as column>
+name: ${column.name.name} -  ${column.name.name.s};
+original: ${column.name.original} -  ${column.name.original.s};
+className: ${column.name.className} -  ${column.name.className.s};
+fieldName: ${column.name.fieldName} -  ${column.name.fieldName.s};
+lowercase: ${column.name.lowercase} -  ${column.name.lowercase.s};
+uppercase: ${column.name.uppercase} -  ${column.name.uppercase.s};
+underlineCase: ${column.name.underlineCase} -  ${column.name.underlineCase.s};
+noUnderlineCase: ${column.name.noUnderlineCase} -  ${column.name.noUnderlineCase.s};
+upperUnderlineCase: ${column.name.upperUnderlineCase} -  ${column.name.upperUnderlineCase.s};
+upperNoUnderlineCase: ${column.name.upperNoUnderlineCase} -  ${column.name.upperNoUnderlineCase.s};
+camelCase: ${column.name.camelCase} -  ${column.name.camelCase.s};
+upperCamelCase: ${column.name.upperCamelCase} -  ${column.name.upperCamelCase.s};
+-------------------------------------------------
+</#list>

@@ -1,0 +1,16 @@
+# Maven #
+target/
+**/dependency-reduced-pom.xml
+**/.flattened-pom.xml
+
+# IDEA #
+.idea/
+*.iml
+
+# Eclipse #
+.settings/
+.classpath
+.project
+
+# Mac #
+.DS_Store

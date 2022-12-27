@@ -1,0 +1,83 @@
+id: "user"
+name: guozilan-${project.id}-parent
+path: ${SYS['user.dir']}/target/
+templates: simple-demo
+database: # 1. 数据库配置
+  ref: simple-demo/demo-database.yaml
+attrs: # 通过 parent.parent...attrs.属性名 可以逐级向上使用属性
+  groupId: io.mybatis
+  artifactId: guozilan-${project.id}-parent
+  version: 1.0.0-SNAPSHOT
+files:
+  - name: guozilan-${project.id}-api
+    attrs:
+      groupId: ${project.attrs.groupId}
+      artifactId: guozilan-${project.id}-api
+      version: ${project.attrs.version}
+    files:
+      - name: src/main
+        files:
+          - name: java
+            files: #包，可以多层
+              - name: 'io.mybatis.${project.id}'
+                type: PACKAGE
+                files:
+                  - name: api
+                    files: #模板文件
+                      - name: '${it.name.className}Service.java' #生成的文件名 Entity 来自于 Table 数据源提供的可用参数，此时需要绑定数据源才能从 Map 中得到值
+                        file: 'service.ftl'  #使用的模板，相对classpath路径
+                        iter: tables
+                        itFilter: '!it.name.original.o.startsWith("apply")' # 过滤 apply 开头
+                  - name: '${it.name.noUnderlineCase}'
+                    iter: tables
+                    itFilter: it.name.original.o.startsWith("apply") # 过滤 apply 开头
+                    files:
+                      - name: '${it.name.className}.java'
+                        file: 'entity.ftl'
+                      - name: '${it.name.className}Service.java'
+                        file: 'service.ftl'
+          - name: resources
+            files:
+              - name: mappers
+                files:
+                  - name: '${it.name.className}Mapper.xml'
+                    iter: tables
+                    file: "mapper.xml.ftl"
+      - name: pom.xml
+        file: |
+          G: ${parent.attrs.groupId}
+          A: ${parent.attrs.artifactId}
+          V: ${parent.attrs.version}
+  - name: guozilan-${project.id}-service
+    attrs:
+      groupId: ${project.attrs.groupId}
+      artifactId: guozilan-${project.id}-service
+      version: ${project.attrs.version}
+    files:
+      - name: src/main
+        files:
+          - name: java
+            type: DIR
+          - name: resources
+            files:
+              - name: META-INF/services
+                files:
+                  - name: xxx.ini
+                    file: |
+                      hello
+                      world
+      - name: pom.xml
+        # 执行两次就能解决下面的问题
+        times: 2
+        # FIXME 下面的 artifactId 中 guozilan-${project.id}-parent 没有替换完整，可能要执行两次
+        file: |
+          G: ${project.attrs.groupId}
+          A: ${project.attrs.artifactId}
+          V: ${project.attrs.version}
+  - name: guozilan-${project.id}-controller
+    files:
+      - name: pom.xml
+        file: |
+          G: ${parent.parent.attrs.groupId}
+          A: ${parent.parent.attrs.artifactId}
+          V: ${parent.parent.attrs.version}

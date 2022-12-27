@@ -1,0 +1,24 @@
+# 数据库连接
+jdbcConnection:
+  ref: "simple-demo/demo-jdbc-mysql-mac.yaml"
+# 单个表的配置
+tables:
+  - apply%
+  - apr%
+  - user%
+  - '%'
+# java类型和数据库类型对应关系，当列中只有其中一种类型时，
+typeMap:
+  CHAR: java.lang.String
+  VARCHAR: java.lang.String
+  LONGVARCHAR: java.lang.String
+  INTEGER: java.lang.Integer
+  BIGINT: java.lang.Long
+  DECIMAL: java.math.BigDecimal
+  DATE: java.util.Date
+  TIME: java.util.Date
+  TIMESTAMP: java.util.Date
+# 数据库关键字
+keywords:
+  - order
+  - desc

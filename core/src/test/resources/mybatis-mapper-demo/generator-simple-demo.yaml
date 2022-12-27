@@ -1,0 +1,57 @@
+id: mybatis-mapper-simple-demo
+name: mybatis-mapper-simple-demo
+path: ${SYS['user.dir']}/target/
+templates: mybatis-mapper-demo
+database: # 1. 数据库配置
+  jdbcConnection:
+    dialect: MYSQL
+    driver: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?useSSL=false
+    user: root
+  # password: root
+  tables:
+    - '%'
+  # 根据类型对字段类型打标签, 可以通过 column.tags.TAG 的 true/false 来判断当前列是否有该标签
+  # 主要对列进行分类，方便后续模板中的使用
+  typeTags:
+    jdbcType:
+      - DATE
+      - TIME
+      - TIMESTAMP
+  keywordWrap: "`%s`"
+  # 数据库关键字
+  keywords:
+    - order
+    - desc
+attrs: # 通过 parent.parent...attrs.属性名 可以逐级向上使用属性
+  basePackage: io.mybatis.demo.mybatis
+files:
+  - name: src/main
+    files:
+      - name: java
+        files: #包，可以多层
+          - name: '${project.attrs.basePackage}'
+            type: PACKAGE
+            files:
+              - name: mapper
+                files:
+                  - name: '${it.name.className}Mapper.java'
+                    file: mapper.java
+                    iter: tables
+              - name: model
+                files:
+                  - name: '${it.name.className}.java'
+                    file: model.java
+                    iter: tables
+              - name: field
+                files:
+                  - name: '${it.name.className}.txt'
+                    file: field.txt
+                    iter: tables
+      - name: resources
+        files:
+          - name: mappers
+            files:
+              - name: '${it.name.className}Mapper.xml'
+                iter: tables
+                file: mapper.xml

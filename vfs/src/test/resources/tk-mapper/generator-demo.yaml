@@ -1,0 +1,54 @@
+id: tk-mapper-demo
+name: tk-mapper-demo
+path: ${SYS['user.dir']}/target/
+templates: tk-mapper
+database: # 1. 数据库配置
+  jdbcConnection:
+    dialect: MYSQL
+    driver: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?useSSL=false
+    user: root
+  #    password: root
+  tables:
+    - '%'
+  keywordWrap: "`%s`"
+  # 数据库关键字
+  keywords:
+    - name
+    - order
+    - desc
+attrs: # 通过 parent.parent...attrs.属性名 可以逐级向上使用属性
+  basePackage: tk.mybatis.mapper.demo
+  generateColumnConsts: true
+files:
+  - name: src/main
+    files:
+      - name: java
+        files: #包，可以多层
+          - name: '${project.attrs.basePackage}'
+            type: PACKAGE
+            files:
+              - name: mapper
+                files:
+                  - name: '${it.name.className}Mapper.java'
+                    file: mapper.java
+                    iter: tables
+              - name: model
+                files:
+                  - name: '${it.name.className}.java'
+                    # 此处有2种模板示例，分别列出来加了注释
+                    file: model.java
+                    #原来需要复杂的配置才能添加lombok注解，现在可以在模板上随便添加
+                    #file: model-lombok.java
+                    iter: tables
+                  - name: '${it.name.className}Model.java' #测试 lombok
+                    #原来需要复杂的配置才能添加lombok注解，现在可以在模板上随便添加
+                    file: model-lombok.java
+                    iter: tables
+      - name: resources
+        files:
+          - name: mappers
+            files:
+              - name: '${it.name.className}Mapper.xml'
+                iter: tables
+                file: mapper.xml

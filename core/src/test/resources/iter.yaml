@@ -1,0 +1,30 @@
+id: iter-demo
+name: ${it.name}
+iter: iters
+path: ${SYS['user.dir']}/target/
+files:
+  - name: ${it.name}
+    iter: it.iters
+    files:
+      - name: ${it.name}
+        iter: it.iters
+        files:
+          - name: ${it.name}
+            iter: it.iters
+            files:
+              - name: ${it.name}
+                iter: it.iters
+                files:
+                  - name: ${it.name}.txt
+                    iter: it.iters
+                    filter: it.?iters != null
+                    file: |
+                      it.name: ${it.name}
+                      parent.it.name: ${parent.it.name}
+                      parent.parent.it.name: ${parent.parent.it.name}
+                      parent.parent.parent.it.name: ${parent.parent.parent.it.name}
+                      parent.parent.parent.parent.it.name: ${parent.parent.parent.parent.it.name}
+                      <#if parent.parent.parent.parent.parent.it??>parent.parent.parent.parent.parent.it.name: ${parent.parent.parent.parent.parent.it.name}</#if>
+                      <#if parent.parent.parent.parent.parent.parent?? && parent.parent.parent.parent.parent.parent.it??>
+                      parent.parent.parent.parent.parent.parent.it.name: ${parent.parent.parent.parent.parent.parent.it.name}
+                      </#if>

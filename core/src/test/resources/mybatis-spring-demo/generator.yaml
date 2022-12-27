@@ -1,0 +1,176 @@
+id: mybatis-spring
+name: mybatis-spring
+path: ${SYS['user.dir']}/target/
+templates: mybatis-spring-demo #模板文件相对 classpath 的位置
+database: # 1. 数据库配置
+  # 数据库连接
+  jdbcConnection:
+    # MySQL 测试 ----------------------------------
+    dialect: MYSQL
+    driver: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?useSSL=false
+    user: root
+  # password: root
+  # postgresql 测试 ----------------------------------
+  # dialect: JDBC
+  # driver: org.postgresql.Driver
+  # url: jdbc:postgresql://localhost:5432/test
+  # user: postgres
+  # password: postgres
+  # catalog: test
+  # schema: public
+  # HSQLDB 测试 ----------------------------------
+  # dialect: JDBC
+  # driver: org.hsqldb.jdbcDriver
+  # url: jdbc:hsqldb:mem:generator
+  # catalog: PUBLIC
+  # schema: INFORMATION_SCHEMA
+  # H2 测试 ----------------------------------
+  # dialect: JDBC
+  # driver: org.h2.Driver
+  # url: jdbc:h2:mem:default
+  # 单个表的配置
+  tables:
+    - '%'
+  tableRules: # TODO 测试
+    - name: user_role
+      ignoreColumnsByRegex: role.*
+      search: user_
+      replace: u_
+      columnRules:
+        - name: user_id
+          search: user
+          replace: u
+  # java类型和数据库类型对应关系, jdbcType 使用小写名称
+  typeMap:
+    CHAR: java.lang.String
+    VARCHAR: java.lang.String
+    LONGVARCHAR: java.lang.String
+    INTEGER: java.lang.Integer
+    BIGINT: java.lang.Long
+    DECIMAL: java.math.BigDecimal
+    DATE: java.util.Date
+    TIME: java.util.Date
+    TIMESTAMP: java.util.Date
+  # 根据类型对字段类型打标签, 可以通过 column.tags.TAG 的 true/false 来判断当前列是否有该标签
+  # 主要对列进行分类，方便后续模板中的使用
+  typeTags:
+    date:
+      - DATE
+      - TIME
+      - TIMESTAMP
+    number:
+      - INTEGER
+      - BIGINT
+      - DECIMAL
+    string:
+      - CHAR
+      - VARCHAR
+      - LONGVARCHAR
+  keywordWrap: "`%s`"
+  # 数据库关键字
+  keywords:
+    - order
+    - desc
+    - address # TODO 测试
+attrs: # 通过 parent.parent...attrs.属性名 可以逐级向上使用属性
+  groupId: io.mybatis.demo
+  artifactId: mybatis-spring
+  version: 1.0.0-SNAPSHOT
+  basePackage: io.mybatis.demo.mybatis
+  userCodesStart: 用户代码开始
+  userCodesEnd: 用户代码结束
+files:
+  - name: src
+    files:
+      - name: main
+        files:
+          - name: java
+            files: #包，可以多层
+              - name: '${project.attrs.basePackage}'
+                type: PACKAGE
+                files:
+                  - name: controller
+                    files: #模板文件
+                      - name: '${it.name.className}Controller.java'
+                        file: controller.java.ftl
+                        iter: tables
+                  - name: mapper
+                    files:
+                      - name: '${it.name.className}Mapper.java'
+                        file: mapper.java.ftl
+                        iter: tables
+                  - name: model
+                    files:
+                      - name: '${it.name.className}.java'
+                        file: model.java.ftl
+                        iter: tables
+                      - name: '${it.name.className}QueryModel.java'
+                        file: queryModel.java.ftl
+                        iter: tables
+                      - name: 'QueryModel.java'
+                        file: QueryModel.java
+                  - name: service
+                    files:
+                      - name: '${it.name.className}Service.java'
+                        file: service.java.ftl
+                        iter: tables
+                      - name: 'IService.java'
+                        file: IService.java
+                      - name: 'BaseService.java'
+                        file: BaseService.java
+                      - name: impl
+                        files:
+                          - name: '${it.name.className}ServiceImpl.java'
+                            file: serviceImpl.java.ftl
+                            iter: tables
+          - name: resources
+            files:
+              - name: mappers
+                files:
+                  - name: '${it.name.className}Mapper.xml'
+                    iter: tables
+                    mode: MERGE
+                    file: mapper.xml
+              - name: applicationContext.xml
+                file: applicationContext.xml
+              - name: config.properties
+                file: config.properties
+              - name: log4j.properties
+              - name: mybatis-servlet.xml
+                file: mybatis-servlet.xml
+          - name: webapp
+            files:
+              - name: static
+                files:
+                  - name: css
+                    files:
+                      - name: style.css
+                  - name: js
+                    files:
+                      - name: jquery-1.11.1.min.js
+              - name: WEB-INF
+                files:
+                  - name: jsp
+                    files:
+                      - name: '${it.name.noUnderlineCase}'
+                        iter: tables
+                        files:
+                          - name: index.jsp
+                            file: index.jsp.ftl
+                          - name: view.jsp
+                            file: view.jsp.ftl
+                  - name: web.xml
+      - name: test/java
+        files:
+          - name: ${project.attrs.basePackage}
+            type: PACKAGE
+            files:
+              - name: 'BaseTest.java'
+                file: BaseTest.java
+              - name: '${it.name.className}Test.java'
+                file: test.ftl
+                iter: tables
+  - file: pom.xml
+  - name: .gitignore
+  - file: README.md

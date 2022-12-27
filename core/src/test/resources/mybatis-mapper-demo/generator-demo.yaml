@@ -1,0 +1,69 @@
+id: mybatis-mapper-demo
+name: mybatis-mapper-demo
+path: ${SYS['user.dir']}/target/
+templates: mybatis-mapper-demo
+database: # 1. 数据库配置
+  jdbcConnection:
+    dialect: MYSQL
+    driver: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?useSSL=false
+    user: root
+  # password: root
+  tables:
+    - '%'
+  # 根据类型对字段类型打标签, 可以通过 column.tags.TAG 的 true/false 来判断当前列是否有该标签
+  # 主要对列进行分类，方便后续模板中的使用
+  typeTags:
+    jdbcType:
+      - DATE
+      - TIME
+      - TIMESTAMP
+  keywordWrap: "`%s`"
+  # 数据库关键字
+  keywords:
+    - order
+    - desc
+attrs: # 通过 parent.parent...attrs.属性名 可以逐级向上使用属性
+  basePackage: io.mybatis.demo.mybatis
+files:
+  - name: src/main
+    files:
+      - name: java
+        files: #包，可以多层
+          - name: '${project.attrs.basePackage}'
+            type: PACKAGE
+            files:
+              - name: controller
+                files: #模板文件
+                  - name: '${it.name.className}Controller.java'
+                    file: controller.java
+                    iter: tables
+              - name: mapper
+                files:
+                  - name: '${it.name.className}Mapper.java'
+                    file: mapper.java
+                    iter: tables
+              - name: model
+                files:
+                  - name: '${it.name.className}.java'
+                    # 此处有2种模板示例，分别列出来加了注释
+                    file: model.java
+                    #                    file: model-lombok.java
+                    iter: tables
+              - name: service
+                files:
+                  - name: '${it.name.className}Service.java'
+                    file: service.java
+                    iter: tables
+                  - name: impl
+                    files:
+                      - name: '${it.name.className}ServiceImpl.java'
+                        file: serviceImpl.java
+                        iter: tables
+      - name: resources
+        files:
+          - name: mappers
+            files:
+              - name: '${it.name.className}Mapper.xml'
+                iter: tables
+                file: mapper.xml
