@@ -8,6 +8,9 @@
   <artifactId>rui-parent</artifactId>
   <packaging>pom</packaging>
   <version>${revision}</version>
+
+  <name>rui</name>
+  <description>睿 - 代码生成器</description>
   <url>https://mybatis.io</url>
 
   <licenses>

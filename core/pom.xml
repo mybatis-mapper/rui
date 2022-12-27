@@ -9,6 +9,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>rui-core</artifactId>
+  <name>rui-core</name>
+  <description>睿 - 核心代码</description>
 
   <dependencies>
     <dependency>

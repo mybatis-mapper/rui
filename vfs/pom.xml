@@ -10,6 +10,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>rui-vfs</artifactId>
+  <name>rui-vfs</name>
+  <description>睿 - 虚拟文件系统</description>
 
   <dependencies>
     <dependency>

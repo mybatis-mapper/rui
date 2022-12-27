@@ -10,6 +10,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>rui-cli</artifactId>
+  <name>rui-cli</name>
+  <description>睿 - 命令行</description>
 
   <dependencies>
     <dependency>
