@@ -1,0 +1,47 @@
+name: tk-mapper-demo # 项目文件名，如果是已经存在的项目，需要 path + name 为项目的路径
+path: ${SYS['user.dir']}/target/ # 项目所在路径
+templates: tk-mapper # 模板文件所在路径（相对 classpath 或者 path）
+database: # 1. 数据库配置，配置结构参考 io.mybatis.rui.template.database.Database
+  jdbcConnection:
+    dialect: MYSQL # 默认为 JDBC，当前只提供了一个 MYSQL 的特殊实现
+    driver: com.mysql.jdbc.Driver # 数据库驱动
+    url: jdbc:mysql://localhost:3306/test?useSSL=false # 数据库连接地址
+    user: root # 账户
+    password: root # 密码
+  tables: # 要获取的表名，可以指定多个，支持模糊匹配
+    - '%'
+  keywordWrap: "`%s`" # 关键字包装形式，其中 %s 代表了表字段名称
+  # 数据库关键字
+  keywords: # 关键字列表，手动指定
+    - name
+    - order
+    - desc
+attrs: # 附加属性，方便额外设置信息，通过 parent.parent...attrs.属性名 可以逐级向上使用属性
+  basePackage: tk.mybatis.mapper.demo
+  generateColumnConsts: true
+files: # 子目录（包）, 配置结构参考 io.mybatis.rui.template.struct.Structure
+  - name: src/main # 默认为目录 DIR，目录名可以写多级
+    files: # 子目录
+      - name: java
+        files:
+          - name: '${project.attrs.basePackage}' #包名，可以多级点隔开
+            struct: PACKAGE # 包，可以多层
+            files: # 子包
+              - name: mapper
+                files:
+                  - name: '${it.name.className}Mapper.java' # 文件名，下面配置 iter 循环表，it 为其中一个表
+                    file: mapper.java # 模板文件，相对顶部 templates 配置的目录（可以 ../../向上查找）
+                    iter: tables # 可选配置，针对指定的数据（mvel2表达式取值）进行循环，会输出多个目录或文件（也可以用于目录和包）
+                    # iterFilter: mvel2 表达式，对数据进行过滤，满足的会执行
+              - name: model
+                files:
+                  - name: '${it.name.className}.java'
+                    file: model.java
+                    iter: tables
+      - name: resources
+        files:
+          - name: mappers
+            files:
+              - name: '${it.name.className}Mapper.xml'
+                iter: tables
+                file: mapper.xml

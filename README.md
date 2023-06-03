@@ -34,7 +34,7 @@ files: # 子目录（包）
       - name: java
         files:
           - name: '${project.attrs.basePackage}' #包名，可以多级点隔开
-            struct: PACKAGE # 包，可以多层
+            type: PACKAGE # 包，可以多层
             files: # 子包
               - name: mapper
                 files:
@@ -42,6 +42,99 @@ files: # 子目录（包）
                     file: mapper.java # 模板文件，相对顶部 templates 配置的目录（可以 ../../向上查找）
                     iter: tables # 可选配置，针对指定的数据（mvel2表达式取值）进行循环，会输出多个目录或文件（也可以用于目录和包）
                     # iterFilter: mvel2 表达式，对数据进行过滤，满足的会执行
+              - name: model
+                files:
+                  - name: '${it.name.className}.java'
+                    file: model.java
+                    iter: tables
+      - name: resources
+        files:
+          - name: mappers
+            files:
+              - name: '${it.name.className}Mapper.xml'
+                iter: tables
+                file: mapper.xml
+```
+
+## 完整配置示例
+
+```yaml
+name: tk-mapper-demo # 项目文件名，如果是已经存在的项目，需要 path + name 为项目的路径
+path: ${SYS['user.dir']}/target/ # 项目所在路径
+templates: tk-mapper # 模板文件所在路径（相对 classpath 或者 path）
+#templateEngineClass: '' # 模板引擎配置，默认实现 FreeMarkerTemplateEngine
+#dataEngineClass: '' # 数据表达式引擎配置，默认实现 Mvel2DataEngine
+#databaseMetaDataClass: '' # 数据源获取数据配置，默认值和 database.jdbcConnection.dialect 有关，可以覆盖默认实现
+attrs: # 附加属性，方便额外设置信息，通过 parent.parent...attrs.属性名 可以逐级向上使用属性
+  basePackage: tk.mybatis.mapper.demo
+  generateColumnConsts: true
+database: # 1. 数据库配置，配置结构参考 io.mybatis.rui.template.database.Database
+  jdbcConnection:
+    dialect: MYSQL # 默认为 JDBC，当前只提供了一个 MYSQL 的特殊实现
+    driver: com.mysql.jdbc.Driver # 数据库驱动
+    url: jdbc:mysql://localhost:3306/test?useSSL=false # 数据库连接地址
+#    catalog: '' # 数据库名称
+#    schema: '' # 数据库名称
+    user: root # 账户
+    password: root # 密码
+  tables: # 要获取的表名，可以指定多个，支持模糊匹配
+    - 'sys%'
+    - 'user_info'
+    - 'user_role'
+  tableRules: # 比 tables 优先级更高，包含相同表时优先使用这里的配置，可以针对表和列进行更复杂的配置
+    - name: 'sys%' # 表名，支持模糊匹配的_和%
+      search: 'sys_' # 支持正则，用于搜索替换
+      replace: '' # 将表名中的 sys_ 部分替换为空，相当于去掉前缀，使用 String.replaceAll(search, replace) 实现
+#      catalog: '' # 数据库名称
+#      schema: '' # 数据库名称
+      ignoreColumnsByRegex: '^(create_time|update_time|create_by|update_by)$' # 忽略的列，正则表达式
+      columnRules: # 列配置
+        - name: 'sname' # 列名，精确匹配，区分大小写
+          search: '^s' # 支持正则，用于搜索替换
+          replace: '' # 将表名中的 sys_ 部分替换为空，相当于去掉前缀，使用 String.replaceAll(search, replace) 实现
+          ignore: false # 忽略列
+        - name: 'saddress' # 列名，精确匹配，区分大小写
+          search: '^s' # 支持正则，用于搜索替换
+          replace: '' # 将表名中的 sys_ 部分替换为空，相当于去掉前缀，使用 String.replaceAll(search, replace) 实现
+          ignore: false # 忽略列
+  typeMap: # 类型转换配置，覆盖默认值，默认配置请看 io.mybatis.rui.model.JdbcType
+    TINYINT: java.lang.Byte
+    VARCHAR: java.lang.String
+  keywordWrap: "`%s`" # 关键字包装形式，其中 %s 代表了表字段名称
+  # 数据库关键字
+  keywords: # 关键字列表，手动指定，没有默认值
+    - name
+    - order
+    - desc
+  # 根据类型对字段类型打标签, 可以通过 column.tags.TAG 的 true/false 来判断当前列是否有该标签
+  # 主要对列进行分类，方便后续模板中的使用
+  typeTags:
+    datetime: # 给下面的jdbcType类型打上 datetime 标签
+      - DATE
+      - TIME
+      - TIMESTAMP
+files: # 子目录（包）, 配置结构参考 io.mybatis.rui.template.struct.Structure
+  - name: src/main # 默认为目录 DIR，目录名可以写多级
+    enabled: true # 当前级别配置是否生效，默认 true 生效
+    type: DIR # 类型为目录，默认为 DIR 目录，一般只有第一层 package 时需要设置 PACKAGE 类型
+    times: 1 # 表达式执行次数，1 为默认值，表示只用参数执行一次，当有嵌套的参数时，需要执行多次才能变成最终的值，
+             # 例如一个表达式执行完是一个新的表达式，还需要再执行一次才能变成具体值
+    files: # 子目录
+      - name: java
+        files:
+          - name: '${project.attrs.basePackage}' #包名，可以多级点隔开
+            type: PACKAGE # 类型为java的包，只有第一层包必须指定，否则无法区分是目录还是包
+            files: # 子包
+              - name: mapper
+                files:
+                  - name: '${it.name.className}Mapper.java' # 文件名，下面配置 iter 循环表，it 为其中一个表
+                    file: mapper.java # 模板文件，相对顶部 templates 配置的目录（可以 ../../向上查找）
+                    iter: tables # 可选配置，针对指定的数据（mvel2表达式取值）进行循环，会输出多个目录或文件（也可以用于目录和包）
+                    # iterName: 'it' # 默认为 it，是 name 和模板中可以使用的迭代对象名
+                    # iterFilter: mvel2 表达式，对迭代数据进行过滤，满足的会执行
+                    # filter: tables != null # 只有满足条件，当前配置才会执行 iter 的迭代
+                    # mode: OVERRIDE # 默认为 OVERRIDE，如果文件已经存在，是否覆盖，OVERRIDE 覆盖，
+                                     # ONCE 只生成一次，存在就不执行，MERGE 合并已存在和新生成的内容
               - name: model
                 files:
                   - name: '${it.name.className}.java'
