@@ -395,7 +395,7 @@ public class User {
 <dependency>
   <groupId>io.mybatis.rui</groupId>
   <artifactId>rui-core</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
