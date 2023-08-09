@@ -63,7 +63,7 @@ public class VFSNode {
    * @param relativePath
    * @return
    */
-  protected VFSNode getVFSNode(Path relativePath) {
+  public VFSNode getVFSNode(Path relativePath) {
     int nameCount = relativePath.getNameCount();
     if (nameCount > 1) {
       Path name = relativePath.getName(0);
@@ -146,7 +146,7 @@ public class VFSNode {
    *
    * @return
    */
-  protected String read() {
+  public String read() {
     if (isFile()) {
       return new String(this.bytes);
     }
@@ -158,7 +158,7 @@ public class VFSNode {
    *
    * @param bytes
    */
-  protected void write(byte[] bytes) {
+  public void write(byte[] bytes) {
     //如果已经存在内容就记录到历史
     if (ArrayUtil.isNotEmpty(this.bytes)) {
       if (CollUtil.isEmpty(history)) {
@@ -172,7 +172,7 @@ public class VFSNode {
   /**
    * 删除节点
    */
-  protected void delete() {
+  public void delete() {
     if (this.parent != null) {
       this.parent.files.remove(this);
       this.parent = null;
@@ -184,11 +184,11 @@ public class VFSNode {
     }
   }
 
-  protected boolean isDirectory() {
+  public boolean isDirectory() {
     return Type.DIR == type;
   }
 
-  protected boolean isFile() {
+  public boolean isFile() {
     return Type.FILE == type;
   }
 
@@ -220,7 +220,7 @@ public class VFSNode {
   /**
    * 根据相对路径写入文件
    */
-  protected void syncDisk(String parentPath) {
+  public void syncDisk(String parentPath) {
     //根据当前的路径创建文件
     File file;
     if (StrUtil.isBlank(name.toString())) {
@@ -309,7 +309,7 @@ public class VFSNode {
     return name.toString();
   }
 
-  enum Type {
+  public enum Type {
     /**
      * 目录
      */
