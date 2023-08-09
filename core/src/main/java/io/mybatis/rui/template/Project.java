@@ -14,6 +14,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,6 +70,16 @@ public class Project extends Structure {
     return load(resource, Project.class);
   }
 
+  /**
+   * 从资源文件流加载
+   *
+   * @param inputStream
+   * @return
+   */
+  public static Project load(@NonNull InputStream inputStream) {
+    return load(inputStream, Project.class);
+  }
+
   @Override
   public void initParams(Context context, Map<String, Object> params) {
     super.initParams(context, params);
@@ -106,6 +117,9 @@ public class Project extends Structure {
     } else if (basedir.lastIndexOf(templates) > -1) {
       templates = basedir.substring(0, basedir.lastIndexOf(templates) + templates.length());
       log.debug("设置templates: " + templates);
+    } else {
+      templates = basedir + File.separator + templates;
+      log.debug("设置templates: " + templates);
     }
   }
 
@@ -113,23 +127,35 @@ public class Project extends Structure {
    * 生成代码
    */
   public void generate() {
-    Map<String, Object> params = new HashMap<>();
-    params.put("id", id);
-    params.put("project", this);
-    params.put("context", context);
-    params.put("database", database);
-    params.put("SYS", System.getProperties());
+    generate((Map) null);
+  }
+
+  /**
+   * 生成代码
+   *
+   * @param params 指定参数，模板中可以直接 key.attr 使用
+   */
+  public void generate(Map<String, ?> params) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("id", id);
+    map.put("project", this);
+    map.put("context", context);
+    map.put("database", database);
+    map.put("SYS", System.getProperties());
     traceLogMap("SYS", System.getProperties());
-    params.put("ENV", System.getenv());
+    map.put("ENV", System.getenv());
     traceLogMap("ENV", System.getenv());
     //处理路径相关的默认值
-    initPath(params);
+    initPath(map);
     //每次生成代码时，初始化 context
-    context.initContext(params);
+    context.initContext(map);
     //获取所有数据信息
-    params.putAll(context.getDataMap());
+    map.putAll(context.getDataMap());
+    if (params != null) {
+      map.putAll(params);
+    }
     //生成代码
-    generator(context, null, params);
+    generator(context, null, map);
   }
 
   /**
@@ -138,11 +164,39 @@ public class Project extends Structure {
    * @param template 指定模板目录或者模板压缩文件
    */
   public void generate(File template) {
-    VFS vfs = VFS.load(template);
-    VFSTemplateFileSystem templateFileSystem = new VFSTemplateFileSystem(vfs);
+    generate(VFS.load(template), null);
+  }
+
+  /**
+   * 使用指定的模板进行生成（仍然是 project.yaml 中配置的模板）
+   *
+   * @param template 模板虚拟目录
+   */
+  public void generate(VFS template) {
+    generate(template, null);
+  }
+
+  /**
+   * 使用指定的模板进行生成（仍然是 project.yaml 中配置的模板）
+   *
+   * @param template 指定模板目录或者模板压缩文件
+   * @param params   指定参数，模板中可以直接 key.attr 使用
+   */
+  public void generate(File template, Map<String, ?> params) {
+    generate(VFS.load(template), params);
+  }
+
+  /**
+   * 使用指定的模板进行生成（仍然是 project.yaml 中配置的模板）
+   *
+   * @param template 模板虚拟目录
+   * @param params   指定参数，模板中可以直接 key.attr 使用
+   */
+  public void generate(VFS template, Map<String, ?> params) {
+    VFSTemplateFileSystem templateFileSystem = new VFSTemplateFileSystem(template);
     TemplateFileSystem old = context.getTemplateFileSystem();
     context.setTemplateFileSystem(templateFileSystem);
-    generate();
+    generate(params);
     context.setTemplateFileSystem(old);
   }
 
@@ -152,10 +206,45 @@ public class Project extends Structure {
    * @return 虚拟文件结构
    */
   public VFS preview() {
+    return preview((Map) null);
+  }
+
+  /**
+   * 预览代码，返回虚拟文件结构
+   *
+   * @param params 指定参数，模板中可以直接 key.attr 使用
+   * @return 虚拟文件结构
+   */
+  public VFS preview(Map<String, ?> params) {
+    return preview(null, params);
+  }
+
+  /**
+   * 预览代码，返回虚拟文件结构
+   *
+   * @param template 模板虚拟目录
+   * @return 虚拟文件结构
+   */
+  public VFS preview(VFS template) {
+    return preview(template, null);
+  }
+
+  /**
+   * 预览代码，返回虚拟文件结构
+   *
+   * @param template 模板虚拟目录
+   * @param params   指定参数，模板中可以直接 key.attr 使用
+   * @return 虚拟文件结构
+   */
+  public VFS preview(VFS template, Map<String, ?> params) {
     VFSGenFileSystem writeFileSystem = new VFSGenFileSystem();
     GenFileSystem old = context.getGenFileSystem();
     context.setGenFileSystem(writeFileSystem);
-    generate();
+    if (template != null) {
+      generate(template, params);
+    } else {
+      generate(params);
+    }
     context.setGenFileSystem(old);
     return writeFileSystem.getVfs();
   }
@@ -181,7 +270,7 @@ public class Project extends Structure {
    * @param name
    * @param dataSource
    */
-  public void addDataSource(String name, Iterable dataSource) {
+  public void addDataSource(String name, Object dataSource) {
     context.addData(name, dataSource);
   }
 

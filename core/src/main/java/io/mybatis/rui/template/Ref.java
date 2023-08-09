@@ -4,6 +4,7 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -31,12 +32,31 @@ public abstract class Ref<R extends Ref> {
    * @return
    */
   public static <R> R load(String resource, Class<R> clazz) {
-    Yaml yaml = new Yaml(new Constructor(clazz));
+    Yaml yaml = new Yaml(new Constructor(clazz, new LoaderOptions()));
     InputStream inputStream = null;
     try {
       inputStream = ResourceUtil.getStream(resource);
       R load = yaml.load(inputStream);
       ((Ref) load).ref = resource;
+      ((Ref) load).r = (Ref) load;
+      return load;
+    } finally {
+      IoUtil.close(inputStream);
+    }
+  }
+
+  /**
+   * 从资源文件加载
+   *
+   * @param inputStream
+   * @param clazz
+   * @param <R>
+   * @return
+   */
+  public static <R> R load(InputStream inputStream, Class<R> clazz) {
+    Yaml yaml = new Yaml(new Constructor(clazz, new LoaderOptions()));
+    try {
+      R load = yaml.load(inputStream);
       ((Ref) load).r = (Ref) load;
       return load;
     } finally {

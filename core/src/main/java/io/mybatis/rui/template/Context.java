@@ -27,39 +27,39 @@ public class Context {
   /**
    * 项目信息
    */
-  private final Project               project;
+  private final Project             project;
   /**
    * 数据源 - all
    */
-  private final Map<String, Iterable> dataMap;
+  private final Map<String, Object> dataMap;
   /**
    * 模板引擎实例
    */
-  private       TemplateEngine        templateEngine;
+  private       TemplateEngine      templateEngine;
   /**
    * 数据引擎
    */
-  private       DataEngine            dataEngine;
+  private       DataEngine          dataEngine;
   /**
    * 获取数据源信息
    */
-  private       DatabaseMetaData      databaseMetaData;
+  private       DatabaseMetaData    databaseMetaData;
   /**
    * 文件写入功能（可以读取写入后的文件）
    */
-  private       GenFileSystem         genFileSystem      = GenFileSystem.DEFAULT;
+  private       GenFileSystem       genFileSystem      = GenFileSystem.DEFAULT;
   /**
    * 读取模板文件功能（相对模板文件的路径，不能读取写入后的文件）
    */
-  private       TemplateFileSystem    templateFileSystem = TemplateFileSystem.DEFAULT;
+  private       TemplateFileSystem  templateFileSystem = TemplateFileSystem.DEFAULT;
   /**
    * 合并文件内容，暂时不考虑外部设置
    */
-  private       Merge                 merge              = new UserCodesMerge();
+  private       Merge               merge              = new UserCodesMerge();
   /**
    * 结构生成器，暂时不考虑外部设置
    */
-  private       StructGenerator       structGenerator    = new StructGenerator();
+  private       StructGenerator     structGenerator    = new StructGenerator();
 
   Context(Project project) {
     this.project = project;
@@ -135,7 +135,7 @@ public class Context {
    * @param name
    * @param dataSource
    */
-  public void addData(String name, Iterable dataSource) {
+  public void addData(String name, Object dataSource) {
     dataMap.put(name, dataSource);
   }
 

@@ -16,6 +16,7 @@ import io.mybatis.rui.template.database.Database;
 import io.mybatis.rui.template.database.Dialect;
 import io.mybatis.rui.template.database.JdbcConnection;
 import org.slf4j.event.Level;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -87,7 +88,7 @@ public class Main {
   protected Project loadFromStdIn() {
     try {
       if (System.in.available() > 0) {
-        return new Yaml(new Constructor(Project.class)).load(System.in);
+        return new Yaml(new Constructor(Project.class, new LoaderOptions())).load(System.in);
       }
     } catch (Exception e) {
     }

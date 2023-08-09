@@ -243,10 +243,40 @@ public class VFS extends VFSNode {
   }
 
   /**
+   * 文件是否存在
+   *
+   * @param file 文件
+   * @return true 存在，false 不存在
+   */
+  public boolean exists(File file) {
+    return exists(relativize(file));
+  }
+
+  /**
+   * 文件是否存在
+   *
+   * @param relativePath 相对路径
+   * @return true 存在，false 不存在
+   */
+  public boolean exists(String relativePath) {
+    return exists(toPath(relativePath));
+  }
+
+  /**
+   * 文件是否存在
+   *
+   * @param relativePath 相对路径
+   * @return true 存在，false 不存在
+   */
+  private boolean exists(Path relativePath) {
+    return getVFSNode(relativePath) != null;
+  }
+
+  /**
    * 读取文件内容
    *
    * @param file 文件
-   * @return
+   * @return 文件内容
    */
   public String read(File file) {
     return read(relativize(file));
@@ -256,7 +286,7 @@ public class VFS extends VFSNode {
    * 读取文件内容
    *
    * @param relativePath 相对路径
-   * @return
+   * @return 文件内容
    */
   public String read(String relativePath) {
     return read(toPath(relativePath));
@@ -266,7 +296,7 @@ public class VFS extends VFSNode {
    * 读取相对路径的文件内容
    *
    * @param relativePath 相对路径
-   * @return
+   * @return 文件内容
    */
   public String read(Path relativePath) {
     VFSNode vfsNode = findVFSNode(relativePath, Type.FILE);
@@ -399,7 +429,7 @@ public class VFS extends VFSNode {
   /**
    * 输出项目结构
    *
-   * @return
+   * @return 项目结构
    */
   public String print() {
     StringBuilder print = new StringBuilder();
@@ -438,7 +468,7 @@ public class VFS extends VFSNode {
   /**
    * 存储为压缩包
    *
-   * @param zip
+   * @param zip 压缩包
    */
   private void syncZip(File zip) {
     try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip))) {
