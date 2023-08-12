@@ -11,6 +11,7 @@ import lombok.Getter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -148,7 +149,7 @@ public class VFSNode {
    */
   public String read() {
     if (isFile()) {
-      return new String(this.bytes);
+      return new String(this.bytes, StandardCharsets.UTF_8);
     }
     return null;
   }
