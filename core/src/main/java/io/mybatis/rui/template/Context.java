@@ -275,7 +275,9 @@ public class Context {
   public void iterableDatas(Structure structure, Map<String, Object> params, BiConsumer<Map<String, Object>, Object> consumer) {
     String iter = structure.getIter();
     if (StrUtil.isEmpty(iter)) {
-      consumer.accept(params, null);
+      if (evalToBoolean(structure.getFilter(), params)) {
+        consumer.accept(params, null);
+      }
     } else {
       if (evalToBoolean(structure.getFilter(), params)) {
         Object datas = eval(iter, params);
