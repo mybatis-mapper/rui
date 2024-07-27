@@ -401,7 +401,7 @@ public class User {
 
 在代码中调用生成器：
 ```java
-Project.load("tk-mapper/generator-demo.yaml").generator();
+Project.load("tk-mapper/generator-demo.yaml").generate();
 ```
 
 ### 方式二：可执行Jar包
